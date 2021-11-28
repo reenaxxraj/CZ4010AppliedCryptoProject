@@ -30,7 +30,7 @@ namespace AppliedCryptoProject
             FileStream inputFileStream = new FileStream(inputFilePath, FileMode.Open);
 
             string inputFileNameWithExt = Path.GetFileName(inputFilePath);
-            string inputFileNameWithoutExt = Path.GetFileName(inputFilePath);
+            string inputFileNameWithoutExt = Path.GetFileNameWithoutExtension(inputFilePath);
             string outputFile = encryptedPath + "\\" + inputFileNameWithoutExt + ".enc";
             FileStream outputFileStream = new FileStream(outputFile, FileMode.Create);
             byte[] encryptedSymmetricKey = KeyManager.EncryptFile(inputFileStream, outputFileStream, inputFileNameWithExt);
@@ -214,7 +214,7 @@ namespace AppliedCryptoProject
 
             }
             string inputFileNameWithExt = Path.GetFileName(inputFilePath);
-            string inputFileNameWithoutExt = Path.GetFileName(inputFilePath);
+            string inputFileNameWithoutExt = Path.GetFileNameWithoutExtension(inputFilePath);
             string outputFile = encryptedPath + "\\" + inputFileNameWithoutExt + ".enc";
             FileStream outputFileStream = new FileStream(outputFile, FileMode.Create);
 

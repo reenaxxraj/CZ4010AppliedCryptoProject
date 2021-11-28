@@ -83,7 +83,7 @@ namespace AppliedCryptoProject
                 }
                 else
                 {
-                    Console.WriteLine("[ERROR]: Response from server: " + response.ReasonPhrase);
+                    //Console.WriteLine("[ERROR]: Response from server: " + response.ReasonPhrase);
                     return (null, null);
                 }
                 
