@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+  identity:
+    build:
+      context: ./IdentityServer
+      dockerfile: Dockerfile-test
+    image: identityserver:test
+    deploy:
+      replicas: 1
+    ports:
+      - "81:80"
+    environment:
+      - ASPNETCORE_URLS=http://+ 
+      - ASPNETCORE_HTTP_PORT=81
+      - ASPNETCORE_Environment=Development
+      - CONNECTION_STRING=Host=postgres-identity;Port=5432;Database=postgres;Username=user;Password=securepassword
+  postgres-identity:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=securepassword
+      - POSTGRES_USER=user
+  application:
+    build:
+      context: ./ApplicationServer
+      dockerfile: Dockerfile-test
+    image: applicationserver:test
+    deploy:
+      replicas: 1
+    ports:
+      - "80:80"
+    environment:
+      - ASPNETCORE_URLS=http://+
+      - ASPNETCORE_HTTP_PORT=80
+      - ASPNETCORE_Environment=Development
+      - CONNECTION_STRING=Host=postgres-application;Port=5432;Database=postgres;Username=user;Password=securepassword
+      - IDENTITY_SERVER_HOST=identity:80
+  postgres-application:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=securepassword
+      - POSTGRES_USER=user
