@@ -21,9 +21,15 @@ Therefore, we would like to come up with a solution that allows us to leverage t
 
 <!-- Research -->
 ## Research
-Common attacks:
+**Considerations**:
+- Server should never be allowed to possess plaintext of files or any keys
+- Key distribution should be possible without exposing any secrets to the server and without needing both parties to be online and active
+- Tampering of the file need to be detectable by end users
+- Any actions taken should ideally be logged and undisputable
 
-Ideas:
+**Basic Concept**:
+
+Asymmetric key cryptography should be used to establish identities and prove ownership, but symmetric key cryptography is likely better for the actual file encryption. By having clients handle all the encryption and decryption, the File Server merely acts as an abstraction over the database and a validator of requests.
 
 <!-- Design -->
 ## Design
@@ -36,15 +42,15 @@ A key goal of our application is to keep the contents of each file in the system
 
 * Integrity
 
-Encrypted files uploaded to the cloud are still susceptible to tampering by a malicious. Therefore, we will have to ensure that client is aware when the file has been modified by someone else other than the owner of the file (Only owner is given permission to modify the file). Each
+Encrypted files uploaded to the cloud are still susceptible to tampering by a malicious. Therefore, we will have to ensure that client is aware when the file has been modified by someone else other than the owner of the file (Only owner is given permission to modify the file). The decrypted file is signed by the owner before being encrypted, and this provides an additional layer of verification during the decryption process. Even if the decryption key was stolen and used to modify the plaintext file, the signature would not match, thus signalling that the file integrity has been compromised.
 
 * Authentication
 
-Each user in the system is identified using their UserID
+Each user in the system is identified using their UserID, and requests to the server are all signed using the user's private key. This signature can be verified by querying the trusted Identity Server to obtain the user's public key. 
 
 * Non-repudiation
 
-In order to prevent any users from disputing the modifications they have made to the file, we have used audit logs to keep track of every request made by each user to to the server.
+In order to prevent any users from disputing the modifications they have made to the file, we have used audit logs of every signed request to keep track of every request made by each user to to the server.
 
 ### Functions of our application
 
@@ -62,18 +68,20 @@ In order to prevent any users from disputing the modifications they have made to
 ## Development
 Our system has been split into 2 different applications. A client side app which will be used by the users. A server side app which will act as a middle man between the client app and the database.
 
-* Client side application
+### Client side application
 
 Developed as C# .NET Console Application.
 Used cryptography package provided by .NET (System.Security.Cryptography)
 Asymmetric Encryption => RSA-2048
 Symmetric Encryption => AES-256 in CFB (Cipher Feedback) mode + Randomly generated IV
 
-* Server side application
-    * .NET Cryptography library
-    * POSTGRES Database
-    * ASP.NET Framework
+### Server side application
+The server side application utilises the following:
+- .NET Cryptography library
+- POSTGRES Database
+- ASP.NET Framework
 
+It is designed as two separate components under different security assumptions. Owing to the need for a fundamental root of trust within the system, an Identity Server is deemed trustworthy and is the central source of verification. It keeps track of the public keys of all users and links it to their username. The File Server is assumed to be potentially untrustworthy and is never allowed to process plaintext or unencrypted keys.
 <!-- GETTING STARTED -->
 ## Getting Started
 
