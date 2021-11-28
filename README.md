@@ -19,8 +19,8 @@ Nevertheless, these advantages can compromise on the security of the information
 
 Therefore, we would like to come up with a solution that allows us to leverage the benefits of a cloud service provider while mitigating the security risks to a certain extent. In this project we will explore how we can develop a secure file sharing system that allows us to share files through an untrusted cloud service provider.
 
-<!-- Research -->
-## Research
+<!-- Overview -->
+## Overview
 **Considerations**:
 - Server should never be allowed to possess plaintext of files or any keys
 - Key distribution should be possible without exposing any secrets to the server and without needing both parties to be online and active
@@ -30,6 +30,10 @@ Therefore, we would like to come up with a solution that allows us to leverage t
 **Basic Concept**:
 
 Asymmetric key cryptography should be used to establish identities and prove ownership, but symmetric key cryptography is likely better for the actual file encryption. By having clients handle all the encryption and decryption, the File Server merely acts as an abstraction over the database and a validator of requests.
+
+**Summary**:
+
+All files are signed by their owner and the file + signature is then encrypted using a AES symmetric key. The symmetric key is then encrypted using the owner's RSA public key. The encrypted key and file are then sent to the file server for storage. Whenever any user needs to retrieve a file, they will retrieve the encrypted file and their personal encrypted key from the server, decrypting the key using their RSA private key. The use the decrypted AES key to decrypt the file, verifying the owner's signature in the process. To share the file with other users, the owner downloads their encrypted key, decrypting it using their RSA private key to obtain the AES key. This AES key is then encrypted using the public key of each user the file is to be shared with, creating a unique encrypted key for each user. These keys are then uploaded to the file server for storage.
 
 <!-- Design -->
 ## Design
@@ -53,13 +57,32 @@ Each user in the system is identified using their UserID, and requests to the se
 In order to prevent any users from disputing the modifications they have made to the file, we have used audit logs of every signed request to keep track of every request made by each user to to the server.
 
 ### Functions of our application
+**Create Account**
+![image](https://user-images.githubusercontent.com/16084793/143774089-00a043c8-3875-48d6-a8dd-ded0ae9c6f33.png)
 
-![image](https://user-images.githubusercontent.com/44928185/143735599-de2cc681-2f4d-4765-aa6d-7a2047502910.png)
+**Login**
+![image](https://user-images.githubusercontent.com/16084793/143774139-a13e6bdd-4231-472d-85b1-537aa37da28b.png)
 
-![image](https://user-images.githubusercontent.com/44928185/143735618-108b80b9-f558-42de-a17d-1fb0db196e71.png)
+**Upload File**
+![image](https://user-images.githubusercontent.com/16084793/143774205-dd4d8f1e-2bd8-49b6-8bb2-abc848115266.png)
 
-![image](https://user-images.githubusercontent.com/44928185/143735584-9f255259-6033-4b8d-9d86-816b13b81bea.png)
+**Download File**
+![image](https://user-images.githubusercontent.com/16084793/143774258-1a4d6b79-1ed3-414b-9a30-d40d1ebb2e3d.png)
 
+**Modify File**
+![image](https://user-images.githubusercontent.com/16084793/143774308-86f52a5a-59fe-4e4d-aaac-5b7f176db9b7.png)
+
+**Delete File**
+![image](https://user-images.githubusercontent.com/16084793/143774362-c425502f-0297-4f85-b63c-85f087ba590a.png)
+
+**Share File**
+![image](https://user-images.githubusercontent.com/16084793/143774401-460d05d8-8cec-4043-95b0-4068a581e37f.png)
+
+**Unshare File**
+![image](https://user-images.githubusercontent.com/16084793/143774455-6cc5d65a-0078-44b3-987c-eb5701c4f230.png)
+
+**Get Logs**
+![image](https://user-images.githubusercontent.com/16084793/143774481-da41827c-94f4-4e68-b86f-994916b79a71.png)
 
 
 
@@ -198,20 +221,3 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: images/screenshot.png
