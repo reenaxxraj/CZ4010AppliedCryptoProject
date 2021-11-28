@@ -104,7 +104,9 @@ The server side application utilises the following:
 - POSTGRES Database
 - ASP.NET Framework
 
-It is designed as two separate components under different security assumptions. Owing to the need for a fundamental root of trust within the system, an Identity Server is deemed trustworthy and is the central source of verification. It keeps track of the public keys of all users and links it to their username. The File Server is assumed to be potentially untrustworthy and is never allowed to process plaintext or unencrypted keys.
+The server side is designed as two separate components under different security assumptions. Owing to the need for a fundamental root of trust within the system, an Identity Server is deemed trustworthy and is the central source of verification. It keeps track of the public keys of all users and links it to their username. The File Server is assumed to be potentially untrustworthy and is never allowed to process plaintext or unencrypted keys.
+
+While common practice would be to introduce HTTPS in order to ensure encrypted traffic between the client and server. For ease of testing, HTTP is used instead. This is not uncommon in industry practice, as it is commonplace for traffic within a virtual private network to run on HTTP between internal servers of an application. Traffic from the outside would utilise HTTPS to communicate with the reverse proxy that acts as the gateway to the private network. Upon reaching the reverse proxy it would be downgraded to HTTP for internal routing. As this repository was set up to demonstrate local testing, this reverse proxy was not part of the design. It is however fairly simple to set up a HTTPS secure reverse proxy to support the application if the docker stack is deployed on any major cloud provider.
 <!-- GETTING STARTED -->
 ## Getting Started
 
